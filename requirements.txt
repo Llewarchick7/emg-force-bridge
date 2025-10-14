@@ -1,0 +1,9 @@
+numpy
+scipy
+matplotlib
+pyserial
+pandas
+scikit-learn
+streamlit
+joblib
+pytest
