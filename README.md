@@ -8,7 +8,7 @@ Goal
 
 Repo layout
 - acquisition/      # Arduino sketches & serial reader
-- preprocessing/    # filters, RMS, feature extraction
+- signal_processing/    # filters, RMS, feature extraction
 - models/           # training scripts & model artifacts
 - ui/               # Streamlit demo and utilities
 - data/             # recordings (CSV) & metadata (do not commit sensitive data)

@@ -1,5 +1,6 @@
 import numpy as np
-from preprocessing.filter import apply_bandpass, apply_notch, sliding_rms
+from emg.preprocessing.filters import apply_bandpass, apply_notch
+from emg.preprocessing.envelope import sliding_rms
 
 def test_bandpass_shape():
     fs = 1000
