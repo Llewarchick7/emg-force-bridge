@@ -56,4 +56,6 @@ void loop() {
     // Schedule next sample (maintains consistent intervals)
     nextSampleTime += sampleIntervalMicros;
   }
+
+  delay(100); // Small delay to avoid busy-waiting
 }
