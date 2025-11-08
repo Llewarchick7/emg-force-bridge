@@ -8,7 +8,7 @@ Goal
 
 Repo layout
 - acquisition/      # Arduino sketches & serial reader
-- signal_processing/    # filters, RMS, feature extraction
+- emg/                 # reusable processing package (filters, envelopes, features, utils)
 - models/           # training scripts & model artifacts
 - ui/               # Streamlit demo and utilities
 - data/             # recordings (CSV) & metadata (do not commit sensitive data)
@@ -23,8 +23,8 @@ Quickstart
 2. Upload acquisition/arduino/emg_stream.ino to your Arduino Uno.
 3. Connect MyoWare output to A0, ground and reference electrode on subject.
 4. Run acquisition/serial_reader.py to view live data and save CSV.
-5. Use preprocessing/filter.py for cleaning; train a baseline model with models/train.py.
-6. Run ui/streamlit_app.py for a simple interface.
+5. Use the `emg.preprocessing` package for cleaning (e.g., `from emg.preprocessing.filters import apply_bandpass, apply_notch`); train a baseline model with models/train.py.
+6. Run ui/unified_dashboard.py for the consolidated live & compare interface.
 
 Safety & ethics
 - Use a ground/reference electrode; do not place electrodes across the chest or near the heart in ways that could cause current loops.
@@ -35,3 +35,9 @@ Daily workflow (1 hour/day)
 - 40 min: Focused task (one GitHub issue / one file)
 - 10 min: Run a test or collect a short recording, commit & push
 - 5 min: Log results & next microtasks in NOTES.md
+
+Processing modules
+- Filters: `emg/preprocessing/filters.py` (apply_bandpass, apply_notch, high/low-pass, streaming SOS)
+- Envelopes: `emg/preprocessing/envelope.py` (sliding_rms, lowpass_envelope)
+- Features: `emg/preprocessing/features.py` (estimate_fs, compute_metrics)
+- The Streamlit UI imports these modules; avoid duplicating processing logic in UI code.

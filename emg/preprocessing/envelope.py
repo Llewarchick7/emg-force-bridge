@@ -26,6 +26,20 @@ def sliding_rms(x: np.ndarray, window_size: int) -> np.ndarray:
     return np.sqrt(np.convolve(x * x, kernel, mode='same'))
 
 
+def sliding_rms_seconds(x: np.ndarray, fs: float, window_seconds: float) -> np.ndarray:
+    """Sliding RMS where the window is specified in seconds.
+
+    Args:
+        x: 1D array of samples.
+        fs: Sampling rate (Hz).
+        window_seconds: Window length in seconds.
+    Returns:
+        RMS envelope with same length as x.
+    """
+    n = max(1, int(round(float(fs) * float(window_seconds))))
+    return sliding_rms(x, n)
+
+
 def lowpass_envelope(rectified: np.ndarray, fs: float, cutoff_hz: float = 5.0, order: int = 2) -> np.ndarray:
     """Low-pass filter a rectified signal to obtain an envelope.
 
