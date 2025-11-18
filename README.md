@@ -41,3 +41,11 @@ Processing modules
 - Envelopes: `emg/preprocessing/envelope.py` (sliding_rms, lowpass_envelope)
 - Features: `emg/preprocessing/features.py` (estimate_fs, compute_metrics)
 - The Streamlit UI imports these modules; avoid duplicating processing logic in UI code.
+
+Signal Processing Overview
+--------------------------
+The EMG pipeline performs (optionally) band‑pass (20–450 Hz) and 60 Hz notch
+filtering, full‑wave rectification, and envelope extraction (RMS window or
+5 Hz low‑pass of rectified signal). Frequency metrics (Mean and Median
+Frequency) are computed from an FFT‑based PSD. See `docs/dsp.md` for detailed
+mathematical derivations and rationale behind each processing step.

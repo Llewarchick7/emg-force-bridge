@@ -1,3 +1,37 @@
+"""Feature and metric extraction for EMG segments.
+
+Metrics Implemented
+-------------------
+1. Sampling Rate Estimate ``estimate_fs`` using median inter‑sample interval.
+2. Time‑domain metrics via ``compute_metrics``:
+    - Peak envelope :math:`\max e[n]`
+    - Integrated EMG (iEMG): :math:`\text{iEMG} = \sum_n e[n] \Delta t` approximates area under the envelope.
+    - Time‑to‑Peak: first timestamp of envelope maximum minus segment start.
+    - Median Frequency (MDF): frequency below which 50% of total spectral power lies.
+    - Envelope sequence used for overlays.
+
+Frequency Metrics (MNF/MDF)
+---------------------------
+For a zero‑mean windowed signal :math:`x[n]`, compute the one‑sided FFT
+``rfft`` giving bins :math:`X[k]`, frequencies :math:`f_k`, and power spectral
+density (unnormalized) :math:`P[k] = |X[k]|^2`.
+
+Mean Frequency (MNF):
+.. math:: \text{MNF} = \frac{\sum_k f_k P[k]}{\sum_k P[k]}
+
+Median Frequency (MDF): smallest :math:`f_m` such that
+.. math:: \sum_{k : f_k \le f_m} P[k] \ge \tfrac{1}{2} \sum_k P[k]
+
+Rationale
+---------
+MDF is often used to approximate muscle fatigue trends (downward shift over
+time). Peak envelope and iEMG relate to intensity of activation. Time‑to‑peak
+can characterize contraction dynamics.
+
+Resilience
+----------
+Functions degrade gracefully: empty or degenerate inputs return defaults.
+"""
 from __future__ import annotations
 import numpy as np
 from .envelope import sliding_rms, sliding_rms_seconds

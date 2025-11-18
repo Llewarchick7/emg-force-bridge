@@ -1,8 +1,57 @@
 """Filtering utilities for EMG preprocessing.
 
-This module provides both offline (zero-phase) filters using filtfilt and
-stateful streaming filters using second-order sections (SOS) for causal
-real-time processing.
+Overview
+--------
+Provides two classes of filters:
+1. Offline zero-phase filters (via ``scipy.signal.filtfilt``) for minimal phase
+    distortion when post-processing recorded data.
+2. Causal streaming filters implemented with second‑order sections (SOS) for
+    real‑time usage where future samples are not available.
+
+Digital Filter Math
+-------------------
+All IIR filters here are Butterworth designs whose magnitude response is as
+flat as possible in the passband. For an Nth‑order analog low‑pass Butterworth
+prototype the squared magnitude is:
+
+.. math:: |H(j\Omega)|^2 = \frac{1}{1 + (\Omega/\Omega_c)^{2N}}
+
+After bilinear transform and frequency pre‑warping, discrete coefficients are
+obtained. ``signal.butter`` abstracts this process. Band‑pass and high/low‑pass
+variants are realized by frequency transformations before discretization.
+
+Normalization: We convert cutoff frequencies (Hz) to normalized digital radian
+frequencies by dividing by Nyquist (``fs/2``). Guardrails clamp values to
+``(0, 1)`` to avoid invalid designs and runtime errors.
+
+Zero‑Phase Filtering (filtfilt)
+------------------------------
+``filtfilt`` applies the IIR filter forward and backward, cancelling phase
+distortion and effectively squaring the magnitude response. It requires enough
+samples for edge transients; we therefore passthrough very short vectors.
+
+Notch Filter
+------------
+The 60 Hz (or configurable) notch uses ``signal.iirnotch``. Its transfer function
+zeros out the specified frequency while keeping nearby bins comparatively
+unaffected, parameterized by quality factor ``Q``:
+
+.. math:: H(z) = \frac{1 - 2 \cos(\omega_0) z^{-1} + z^{-2}}{1 - 2 R \cos(\omega_0) z^{-1} + R^2 z^{-2}}
+
+where :math:`R = 1 - \frac{\pi}{Q}` (approx) controls the bandwidth.
+
+Streaming SOS Filtering
+-----------------------
+For real‑time pipelines we use a cascade of biquads (SOS). State is preserved
+across blocks, avoiding the need for forward/backward passes. ``StreamingSOS``
+wraps ``signal.sosfilt`` and retains internal delay states ``zi``. Resetting
+restores steady‑state for zero input.
+
+Resilience Strategy
+-------------------
+All functions implement "passthrough on invalid" behavior (empty input,
+non‑positive sampling rate, reversed band, etc.) to keep acquisition loops
+robust: instead of throwing, they return the original array.
 """
 from __future__ import annotations
 import numpy as np

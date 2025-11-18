@@ -1,3 +1,31 @@
+"""Unified Streamlit EMG dashboard.
+
+Provides two views:
+1. Live Monitor – acquisition, filtering (band‑pass, notch), rectification,
+    envelope (RMS or low‑pass), metrics (RMS, iEMG, MNF, MDF, SNR, clipping),
+    spectrogram, markers, recording & buffer export.
+2. Compare Sessions – load two CSV recordings, window selection, feature
+    extraction (peak envelope, iEMG, time‑to‑peak, MDF), symmetry index, overlay.
+
+Processing Chain (Live)
+-----------------------
+Raw ADC codes -> scale to volts -> (optional) band‑pass -> (optional) notch ->
+center -> rectification -> envelope -> metrics.
+
+Key Equations
+-------------
+Rectification: :math:`r[n] = |x[n]|`
+RMS Envelope: :math:`e_{RMS}[n] = \sqrt{\frac{1}{N} \sum_{k=n-N/2}^{n+N/2} r[k]^2}`
+Integrated EMG: :math:`iEMG = \sum_n e[n] \Delta t`
+Mean Frequency: :math:`MNF = \frac{\sum_k f_k P[k]}{\sum_k P[k]}`
+Median Frequency: smallest :math:`f_m` with cumulative power >= 50%.
+
+Resilience & UX Notes
+---------------------
+All processing guardrails return passthrough on invalid parameters to keep the
+UI responsive under misconfiguration (e.g. HP >= LP). Auto‑refresh rate is
+throttled to balance latency and CPU usage.
+"""
 import streamlit as st
 import numpy as np
 import plotly.graph_objects as go

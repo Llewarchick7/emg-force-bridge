@@ -1,7 +1,20 @@
 """Reusable Plotly figure builders for EMG dashboard.
 
-Separates visualization concerns from acquisition/preprocessing so figures can be
-unit-tested and reused in other interfaces.
+Purpose
+-------
+Encapsulate visualization primitives (time series, PSD, spectrogram) used by
+the Streamlit dashboard. Separation simplifies testing and future UI reuse.
+
+Spectrogram Computation
+-----------------------
+Uses overlapping Hann‑windowed segments of length ``win_len`` with 75% overlap
+(``step = win_len/4``). For each segment:
+
+.. math:: S_k[f] = | \text{FFT}( w[n] x_k[n] ) |
+
+Magnitudes are stacked to form a time‑frequency matrix converted to dB
+(:math:`10 \log_{10}(S + \epsilon)`). This is a quick diagnostic; for formal
+analysis one might apply Welch's method or multitaper approaches.
 """
 from __future__ import annotations
 import numpy as np

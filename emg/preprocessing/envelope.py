@@ -1,8 +1,33 @@
 """Envelope extraction utilities for EMG.
 
-Two common approaches are provided:
-- sliding_rms: RMS over a moving window (simple and robust)
-- lowpass_envelope: Low-pass filter of rectified EMG
+Purpose
+-------
+The EMG envelope approximates the amplitude modulation of motor unit action
+potentials. A smoothed envelope correlates with muscle activation level,
+facilitating feature extraction (e.g., integrated EMG, onset detection).
+
+Methods Implemented
+-------------------
+1. ``sliding_rms``: Root‑Mean‑Square over a centered moving window.
+2. ``lowpass_envelope``: Full‑wave rectification followed by low‑pass filtering.
+
+Mathematical Definitions
+------------------------
+Given a rectified discrete signal :math:`x[n]` and a window of length :math:`N`:
+
+RMS envelope:
+.. math:: e_{\text{RMS}}[n] = \sqrt{\frac{1}{N} \sum_{k = n-N/2}^{n+N/2} x[k]^2 }
+
+Low‑pass envelope (conceptually):
+.. math:: e_{\text{LP}}[n] = (|x| * h)[n]
+where :math:`h[n]` is the impulse response of a low‑pass filter (e.g. Butterworth)
+with cutoff near 3–10 Hz for typical activation smoothing.
+
+Window Size Considerations
+--------------------------
+Smaller RMS windows (< ~10 ms) track rapid transients but approach the
+rectified curve; larger windows (> ~200 ms) oversmooth and can hide onset.
+The default in this project (100 ms) balances stability and responsiveness.
 """
 from __future__ import annotations
 import numpy as np
