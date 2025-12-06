@@ -7,15 +7,15 @@ Goal
 - Constraints: 1 hour/day development, heavy use of AI agents for boilerplate and tests.
 
 Repo layout
-- acquisition/      # Arduino sketches & serial reader
-- emg/                 # reusable processing package (filters, envelopes, features, utils)
-- models/           # training scripts & model artifacts
-- ui/               # Streamlit demo and utilities
+- firmware/         # ESP32-IDF project (src/, components/)
+- backend/          # FastAPI service reusing emg preprocessing
+- ui/               # react/ (Next.js) and streamlit/ (prototype)
+- emg/              # reusable processing package (filters, envelopes, features, utils)
+- ml/               # experiments/, models/, train/, inference/
 - data/             # recordings (CSV) & metadata (do not commit sensitive data)
-- notebooks/        # exploratory notebooks
-- docs/             # protocol, consent, outreach
-- tests/            # unit tests
-- .github/workflows # CI (pytest)
+- docs/             # protocol, consent, outreach, DSP reference
+- tests/            # unit tests (python/ui/firmware where applicable)
+- .github/workflows # CI
 - NOTES.md          # daily 1-hour log
 
 Quickstart
