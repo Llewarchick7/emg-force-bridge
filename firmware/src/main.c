@@ -4,13 +4,15 @@
 
 // acquisition start
 void emg_acq_start(void);
+void emg_stream_start(void);
 
 static const char *TAG = "main";
 
 void app_main(void) {
     ESP_LOGI(TAG, "EMG Force Bridge firmware booting...");
-    // Start EMG acquisition task (ADS1115 ~860 SPS)
+    // Start EMG acquisition and streaming (ADS1115 ~860 SPS)
     emg_acq_start();
+    emg_stream_start();
     while (true) {
         vTaskDelay(pdMS_TO_TICKS(1000));
         ESP_LOGI(TAG, "heartbeat");
