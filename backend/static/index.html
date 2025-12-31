@@ -1,0 +1,48 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>EMG Live Plot</title>
+    <script src="https://cdn.plot.ly/plotly-2.32.0.min.js"></script>
+    <style>
+      body { font-family: system-ui, sans-serif; margin: 16px; }
+      #plot { width: 100%; max-width: 900px; height: 420px; }
+      label, input { margin-right: 8px; }
+    </style>
+  </head>
+  <body>
+    <h2>EMG Live Plot (Polling)</h2>
+    <div>
+      <label>Channel</label>
+      <input id="channel" type="number" value="0" />
+      <label>API Key</label>
+      <input id="apikey" type="text" value="dev-key" />
+      <button id="start">Start</button>
+    </div>
+    <div id="plot"></div>
+    <script>
+      const plotDiv = document.getElementById('plot');
+      Plotly.newPlot(plotDiv, [{x:[], y:[], mode:'lines', name:'envelope'}], {margin:{t:30}});
+
+      async function fetchLatest(ch) {
+        const apiKey = document.getElementById('apikey').value.trim();
+        const res = await fetch(`/emg/latest?channel=${ch}`, { headers: {'X-API-Key': apiKey} });
+        if (!res.ok) return null;
+        return res.json();
+      }
+
+      let timer = null;
+      document.getElementById('start').onclick = () => {
+        const ch = Number(document.getElementById('channel').value);
+        if (timer) clearInterval(timer);
+        timer = setInterval(async () => {
+          const s = await fetchLatest(ch);
+          if (!s) return;
+          Plotly.extendTraces(plotDiv, {x:[[new Date(s.timestamp)]], y:[[s.envelope]]}, [0]);
+          const len = plotDiv.data[0].x.length;
+          if (len > 600) Plotly.deleteTraces(plotDiv, [0]);
+        }, 200);
+      };
+    </script>
+  </body>
+</html>

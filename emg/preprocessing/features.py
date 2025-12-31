@@ -2,8 +2,8 @@
 
 Metrics Implemented
 -------------------
-1. Sampling Rate Estimate ``estimate_fs`` using median inter‑sample interval.
-2. Time‑domain metrics via ``compute_metrics``:
+1. Sampling Rate Estimate "estimate_fs" using median inter‑sample interval.
+2. Time‑domain metrics via "compute_metrics":
     - Peak envelope :math:`\max e[n]`
     - Integrated EMG (iEMG): :math:`\text{iEMG} = \sum_n e[n] \Delta t` approximates area under the envelope.
     - Time‑to‑Peak: first timestamp of envelope maximum minus segment start.
@@ -13,7 +13,7 @@ Metrics Implemented
 Frequency Metrics (MNF/MDF)
 ---------------------------
 For a zero‑mean windowed signal :math:`x[n]`, compute the one‑sided FFT
-``rfft`` giving bins :math:`X[k]`, frequencies :math:`f_k`, and power spectral
+"rfft" giving bins :math:`X[k]`, frequencies :math:`f_k`, and power spectral
 density (unnormalized) :math:`P[k] = |X[k]|^2`.
 
 Mean Frequency (MNF):

@@ -8,8 +8,8 @@ facilitating feature extraction (e.g., integrated EMG, onset detection).
 
 Methods Implemented
 -------------------
-1. ``sliding_rms``: Root‑Mean‑Square over a centered moving window.
-2. ``lowpass_envelope``: Full‑wave rectification followed by low‑pass filtering.
+1. "sliding_rms": Root‑Mean‑Square over a centered moving window.
+2. "lowpass_envelope": Full‑wave rectification followed by low‑pass filtering.
 
 Mathematical Definitions
 ------------------------

@@ -1,0 +1,18 @@
+idf_component_register(
+    SRCS
+        main.c
+        drivers/adc_emg_driver.c
+        drivers/uart_transport.c
+        tasks/task_acq.c
+        tasks/task_stream.c
+        tasks/task_proc.c
+        services/ble_emg.c
+    INCLUDE_DIRS
+        .
+    REQUIRES
+        driver
+        bt
+        nimble
+        esp_nimble_hci
+        esp_timer
+)

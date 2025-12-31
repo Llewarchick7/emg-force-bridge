@@ -88,7 +88,15 @@ def plot_time_series(
 
 
 def plot_psd(freqs: np.ndarray, psd: np.ndarray, mnf: float, mdf: float, fs_est: float) -> go.Figure:
-    """Return a PSD figure with MNF/MDF annotation."""
+    """ Returns a Power Spectral Density plot with MNF(Mean Frequency) and MDF(Median Frequency) annotations."""
+    """
+    Args:
+        freqs: Frequency bins (Hz).
+        psd: Power spectral density values.
+        mnf: Mean frequency (Hz).
+        mdf: Median frequency (Hz).
+        fs_est: Estimated sampling frequency (Hz).
+    """
     fig = go.Figure()
     fig.add_trace(go.Scatter(x=freqs, y=psd, mode="lines", name="PSD"))
     fig.update_layout(height=280, title=f"PSD | MNF {mnf:.1f} Hz, MDF {mdf:.1f} Hz")

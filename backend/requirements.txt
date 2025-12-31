@@ -1,6 +1,10 @@
 fastapi
 uvicorn
 pydantic
+SQLAlchemy
+python-dotenv
+bleak
+requests
 pyserial
 numpy
 scipy

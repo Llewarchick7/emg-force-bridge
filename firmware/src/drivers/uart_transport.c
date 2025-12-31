@@ -4,6 +4,7 @@
 #include "esp_log.h"
 #include <stdarg.h>
 #include <stdio.h>
+#include <string.h>
 
 static const char *TAG = "uart_tx";
 
