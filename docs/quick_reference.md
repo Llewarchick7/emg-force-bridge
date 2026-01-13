@@ -7,12 +7,12 @@ The EMG Force Bridge is a complete end-to-end system for wireless EMG signal acq
 ## Architecture at a Glance
 
 ```
-[Sensor] --BLE--> [Gateway] --HTTP--> [Backend API] --SQL--> [Database]
-                                              ^
-                                              |
-                                           HTTP/REST
-                                              |
-                                          [Frontend]
+[Sensor] --BLE GATT--> [Gateway] --REST/JSON--> [Backend API] --SQL--> [Database]
+                                                        ^
+                                                        |
+                                                     REST/JSON
+                                                        |
+                                                    [Frontend]
 ```
 
 ## Key Components
@@ -424,7 +424,7 @@ cd ui/streamlit
 - **Sequence Diagrams:** [sequence_diagrams.md](./sequence_diagrams.md)
 - **Signal Processing:** [dsp.md](./dsp.md)
 - **Testing Protocol:** [protocol.md](./protocol.md)
-- **ESP-IDF Docs:** https://docs.espressif.com/projects/esp-idf/
+- **ESP-IDF v5.x for ESP32-S3:** https://docs.espressif.com/projects/esp-idf/en/latest/esp32s3/
 - **FastAPI Docs:** https://fastapi.tiangolo.com
 - **Bleak (BLE):** https://github.com/hbldh/bleak
 

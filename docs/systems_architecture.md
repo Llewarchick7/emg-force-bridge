@@ -413,7 +413,7 @@ The ESP32 performs real-time DSP before BLE transmission:
 **Processing Steps:**
 1. **Acquisition:** ADS1115 samples at ~860 SPS (configurable)
 2. **Band-pass Filter:** 20-450 Hz (removes DC offset and high-freq noise)
-3. **Notch Filter:** 60 Hz (removes AC power line interference)
+3. **Notch Filter:** 60 Hz for US / 50 Hz for EU (configurable, removes AC power line interference)
 4. **Rectification:** Full-wave rectification (absolute value)
 5. **Envelope Extraction:** 
    - Option A: RMS with sliding window
@@ -576,11 +576,11 @@ See `docs/dsp.md` for mathematical details.
 
 ## References
 
-- **BLE Specification:** Bluetooth 5.0 Core Specification
+- **BLE Specification:** Bluetooth 5.0 Core Specification (https://www.bluetooth.com/specifications/specs/core-specification-5-0/)
 - **FastAPI Documentation:** https://fastapi.tiangolo.com
 - **SQLAlchemy ORM:** https://docs.sqlalchemy.org
 - **Bleak (BLE Library):** https://github.com/hbldh/bleak
-- **ESP-IDF:** https://docs.espressif.com/projects/esp-idf/
+- **ESP-IDF v5.x:** https://docs.espressif.com/projects/esp-idf/en/latest/esp32s3/
 
 ## Related Documentation
 

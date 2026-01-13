@@ -456,6 +456,13 @@ This document provides detailed sequence diagrams for key system workflows.
    - Transaction rollback on failure
    - API returns 500 error to gateway
    - Gateway retries or alerts operator
+   - Disk space monitoring recommended (~17 MB/day growth)
+
+4. **Disk Space Management:**
+   - Monitor available disk space on backend
+   - Implement data retention policies
+   - Archive or purge old data periodically
+   - Set up alerts for low disk space
 
 ### Performance Optimizations
 
