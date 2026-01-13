@@ -49,3 +49,17 @@ filtering, full‑wave rectification, and envelope extraction (RMS window or
 5 Hz low‑pass of rectified signal). Frequency metrics (Mean and Median
 Frequency) are computed from an FFT‑based PSD. See `docs/dsp.md` for detailed
 mathematical derivations and rationale behind each processing step.
+
+System Architecture
+-------------------
+The system implements a complete wireless data pipeline from BLE sensor to cloud storage:
+- **ESP32-S3 Firmware**: EMG acquisition, real-time DSP, BLE GATT server
+- **BLE Gateway**: Python client bridging BLE notifications to HTTP REST API
+- **FastAPI Backend**: Data ingestion, storage, and query endpoints
+- **SQLite/PostgreSQL**: Time-series data persistence
+- **React/Streamlit UI**: Real-time monitoring dashboards
+
+For detailed architecture documentation:
+- `docs/systems_architecture.md` - Complete system design and data flow
+- `docs/sequence_diagrams.md` - Workflow sequences and error handling
+- `docs/quick_reference.md` - Quick start guide and troubleshooting
