@@ -2,9 +2,9 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from datetime import datetime
 
-from db.session import get_db
-from routers.auth import api_key_auth
-from services.analytics import activation_percent, threshold_crossings, rms_over_window
+from ..db.session import get_db
+from .auth import api_key_auth
+from ..services.analytics import activation_percent, threshold_crossings, rms_over_window
 
 router = APIRouter(dependencies=[Depends(api_key_auth)])
 

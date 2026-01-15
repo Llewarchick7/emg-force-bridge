@@ -1,5 +1,5 @@
 from fastapi import Header, HTTPException, Depends
-from core.config import settings
+from ..core.config import settings
 
 
 def api_key_auth(x_api_key: str | None = Header(default=None)):
