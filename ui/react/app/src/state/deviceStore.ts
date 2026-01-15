@@ -35,9 +35,11 @@ export const useDeviceStore = create<DeviceState>((set, get) => ({
       try {
         const sample = await api.emgLatest(ch);
         if (!active) return;
-        set({ lastSample: sample, backendOnline: true });
+        set({ lastSample: sample });
       } catch (e) {
-        set({ backendOnline: false });
+        // Do not mark backend offline solely based on latest-sample errors (e.g., 404 when empty)
+        // Instead, refresh health state to reflect true availability
+        try { await get().checkHealth(); } catch {}
       }
       if (active) setTimeout(tick, intervalMs);
     };

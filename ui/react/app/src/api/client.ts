@@ -14,7 +14,10 @@ async function request<T>(path: string, method: HttpMethod = 'GET', body?: unkno
   });
   if (!res.ok) {
     const text = await res.text().catch(() => '');
-    throw new Error(`API ${method} ${path} failed ${res.status}: ${text}`);
+    const err: any = new Error(`API ${method} ${path} failed ${res.status}: ${text}`);
+    err.status = res.status;
+    err.body = text;
+    throw err;
   }
   return res.json();
 }
