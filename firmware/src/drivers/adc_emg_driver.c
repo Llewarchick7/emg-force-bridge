@@ -32,10 +32,10 @@ references:
 esp_err_t ads1115_read_config(uint16_t *out_cfg);
 
 static const char *TAG = "ADS1115";
-// Diagnostic option: enable ESP32 internal I2C pull-ups for a one-off test
-// Set to 1 to help determine if external pull-ups/power are missing.
+// Diagnostic option: enable ESP32 internal I2C pull-ups
+// Default 0 now that external pull-ups are installed.
 #ifndef ADS_I2C_PULLUPS_INTERNAL_TEST
-#define ADS_I2C_PULLUPS_INTERNAL_TEST 1
+#define ADS_I2C_PULLUPS_INTERNAL_TEST 0
 #endif
 
 // Helper to (re)initialize I2C with given pins, clock and internal pull-up option
@@ -69,6 +69,29 @@ static void i2c_bus_idle_check(int sda_gpio, int scl_gpio) {
     int sda_lvl = gpio_get_level(sda_gpio);
     int scl_lvl = gpio_get_level(scl_gpio);
     ESP_LOGI(TAG, "Bus idle levels: SDA=%d SCL=%d (expect 1/1 with pull-ups)", sda_lvl, scl_lvl);
+}
+
+// Perform a minimal I2C controller sanity check: issue START + address write and
+// observe the result to differentiate controller activity (NACK) from bus timeout.
+static void i2c_sanity_check(i2c_port_t port) {
+    i2c_cmd_handle_t cmd = i2c_cmd_link_create();
+    // Use an address unlikely to exist; any non-present address should NACK
+    const uint8_t addr = 0x00; // reserved; typical devices won't ACK this
+    i2c_master_start(cmd);
+    (void)i2c_master_write_byte(cmd, (addr << 1) | I2C_MASTER_WRITE, true);
+    i2c_master_stop(cmd);
+    esp_err_t err = i2c_master_cmd_begin(port, cmd, pdMS_TO_TICKS(50));
+    i2c_cmd_link_delete(cmd);
+
+    if (err == ESP_OK) {
+        ESP_LOGI(TAG, "I2C sanity: unexpected ACK at 0x%02X (controller active)", addr);
+    } else if (err == ESP_FAIL) {
+        ESP_LOGI(TAG, "I2C sanity: saw NACK as expected (controller active)");
+    } else if (err == ESP_ERR_TIMEOUT) {
+        ESP_LOGE(TAG, "I2C sanity: bus timeout (SCL/SDA stuck?)");
+    } else {
+        ESP_LOGW(TAG, "I2C sanity: cmd error %d", err);
+    }
 }
 
 // I2C bus configuration and ADC address
@@ -256,6 +279,10 @@ esp_err_t ads1115_init(void) {
         ESP_LOGE(TAG, "i2c init failed: %d", err);
         return err;
     }
+
+    ESP_LOGI(TAG, "I2C pull-ups: %s", ADS_I2C_PULLUPS_INTERNAL_TEST ? "internal (ESP32 GPIO)" : "external (board) expected");
+    // Quick sanity to verify master is issuing START/STOP and bus responds
+    i2c_sanity_check(ADS1115_I2C_PORT);
 
     // Verify the ADS1115 is present before writing configuration
     // First, check bus idle levels (should be high if pull-ups are present)
