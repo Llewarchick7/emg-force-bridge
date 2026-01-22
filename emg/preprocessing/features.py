@@ -55,23 +55,33 @@ def estimate_fs(t: np.ndarray, default: float = 1000.0) -> float:
     return float(1.0 / np.median(dt))
 
 def _psd_metrics(sig: np.ndarray, fs: float) -> tuple[float, float]:
-    """Return (MNF, MDF) using simple FFT-based PSD metrics."""
+    """
+    Compute mean (MNF) and median frequency (MDF) of the EMG signal using FFT-based PSD.
+    
+    Args: 
+        sig: EMG signal array.
+        fs: Sampling frequency in Hz.
+    
+    Returns:
+        tuple[float, float]: (MNF, MDF) using simple FFT-based PSD metrics.
+    """
     if fs <= 0 or sig.size < 2:
         return 0.0, 0.0
-    x = np.asarray(sig, dtype=float)
-    x = x - np.mean(x)
-    yf = np.fft.rfft(x)
-    freqs = np.fft.rfftfreq(x.size, d=1.0/float(fs))
-    psd = np.abs(yf) ** 2
-    psd_sum = float(np.sum(psd))
+    n = np.asarray(sig, dtype=float) # Convert signal to float array of n samples
+    n = n - np.mean(n) # Zero-mean the signal
+    yf = np.fft.rfft(n) # Compute the one-sided FFT of the zero-mean signal
+    freqs = np.fft.rfftfreq(n.size, d=1.0/float(fs)) # Frequency bins corresponding to FFT
+    psd = np.abs(yf) ** 2 # Power spectral density (unnormalized)
+    psd_sum = float(np.sum(psd)) # Total power in the PSD
     if psd_sum <= 0:
         return 0.0, 0.0
-    mnf = float(np.sum(freqs * psd) / psd_sum)
-    cumsum = np.cumsum(psd)
-    half = cumsum[-1] / 2.0
-    idx = int(np.searchsorted(cumsum, half))
-    mdf = float(freqs[idx]) if idx < freqs.size else 0.0
+    mnf = float(np.sum(freqs * psd) / psd_sum) # Mean frequency
+    cumsum = np.cumsum(psd) # Cumulative sum of the PSD
+    half = cumsum[-1] / 2.0 # Half of the cumulative sum
+    idx = int(np.searchsorted(cumsum, half)) # Index of the median frequency
+    mdf = float(freqs[idx]) if idx < freqs.size else 0.0 # Median frequency
     return mnf, mdf
+
 
 def compute_metrics(t: np.ndarray, sig: np.ndarray, fs: float, rms_window_s: float = 0.10) -> dict:
     """Compute basic EMG metrics for a time segment.
@@ -83,13 +93,13 @@ def compute_metrics(t: np.ndarray, sig: np.ndarray, fs: float, rms_window_s: flo
         return {}
     # Envelope using RMS of centered signal
     xc = x - np.mean(x)
-    env = sliding_rms_seconds(xc, fs, rms_window_s)
+    env = sliding_rms_seconds(xc, fs, rms_window_s) # Compute RMS envelope over sliding window
     dt = 1.0 / float(fs) if fs > 0 else 0.0
-    iemg = float(np.sum(env) * dt)
-    peak = float(np.max(env))
-    t_to_peak = float(t[np.argmax(env)] - t[0]) if t.size > 0 else 0.0
+    iemg = float(np.sum(env) * dt) # Integrated EMG (area under the envelope)
+    peak = float(np.max(env)) # Peak envelope value
+    t_to_peak = float(t[np.argmax(env)] - t[0]) if t.size > 0 else 0.0 # Time to peak
     # Median frequency via PSD
-    _, mdf = _psd_metrics(x, fs)
+    _, mdf = _psd_metrics(x, fs) # Compute median frequency via PSD
     return {
         "peak_env": peak,
         "iemg": iemg,

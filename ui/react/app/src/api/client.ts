@@ -31,4 +31,9 @@ export const api = {
     request(`/analytics/activation?channel=${channel}&start=${encodeURIComponent(startISO)}&end=${encodeURIComponent(endISO)}&threshold=${threshold}`),
   analyticsRms: (channel: number, startISO: string, endISO: string) =>
     request(`/analytics/rms?channel=${channel}&start=${encodeURIComponent(startISO)}&end=${encodeURIComponent(endISO)}`),
+  analyticsPsd: (channel: number, startISO: string, endISO: string) =>
+    request(`/analytics/psd?channel=${channel}&start=${encodeURIComponent(startISO)}&end=${encodeURIComponent(endISO)}`),
+  demoSyntheticEmg: (body: {
+    duration_s?: number; fs?: number; channel?: number; amplitude?: number; noise_std?: number; f1_hz?: number; f2_hz?: number;
+  }) => request(`/demo/synthetic/emg`, 'POST', body),
 };

@@ -6,6 +6,7 @@ from ..db.session import get_db
 from ..db.models import EMGSample
 from ..models.schemas import EMGSampleCreate, EMGSampleRead
 from .auth import api_key_auth
+from ..services.emg_processing import fill_missing_fields
 
 
 router = APIRouter(dependencies=[Depends(api_key_auth)])
@@ -21,13 +22,21 @@ def ingest_emg(
         raise HTTPException(status_code=400, detail="Empty payload")
     saved: List[EMGSample] = []
     for it in items:
-        row = EMGSample(
-            timestamp=it.timestamp,
+        # Compute any missing fields off-device using lightweight streaming state
+        rect, env, rms = fill_missing_fields(
             channel=it.channel,
             raw=it.raw,
             rect=it.rect,
             envelope=it.envelope,
             rms=it.rms,
+        )
+        row = EMGSample(
+            timestamp=it.timestamp,
+            channel=it.channel,
+            raw=it.raw,
+            rect=rect,
+            envelope=env,
+            rms=rms,
         )
         db.add(row)
         saved.append(row)

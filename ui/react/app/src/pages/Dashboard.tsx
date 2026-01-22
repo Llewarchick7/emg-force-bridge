@@ -18,7 +18,6 @@ export default function Dashboard() {
   const [series, setSeries] = useState<{ x: number; y: number }[]>([]);
 
   useEffect(() => {
-    stopRef.current?.();
     stopRef.current = pollLatest(500);
     return () => stopRef.current?.();
   }, [pollLatest, selectedChannel]);

@@ -10,6 +10,7 @@ export default function App() {
           <NavLink to="/" end>Dashboard</NavLink>
           <NavLink to="/visualization">Visualization</NavLink>
           <NavLink to="/calibration">Calibration</NavLink>
+          <NavLink to="/psd">PSD</NavLink>
           <NavLink to="/logs">Logs</NavLink>
         </nav>
       </aside>
