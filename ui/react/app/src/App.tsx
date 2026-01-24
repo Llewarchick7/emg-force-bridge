@@ -8,6 +8,7 @@ export default function App() {
         <h1>EMG Force Bridge</h1>
         <nav>
           <NavLink to="/" end>Dashboard</NavLink>
+          <NavLink to="/clinical">Clinical Dashboard</NavLink>
           <NavLink to="/visualization">Visualization</NavLink>
           <NavLink to="/calibration">Calibration</NavLink>
           <NavLink to="/psd">PSD</NavLink>

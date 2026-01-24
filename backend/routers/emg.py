@@ -2,11 +2,11 @@ from fastapi import APIRouter, Depends, Body, HTTPException
 from sqlalchemy.orm import Session
 from typing import List, Union
 
-from ..db.session import get_db
-from ..db.models import EMGSample
-from ..models.schemas import EMGSampleCreate, EMGSampleRead
-from .auth import api_key_auth
-from ..services.emg_processing import fill_missing_fields
+from backend.db.session import get_db
+from backend.db.models import EMGSample
+from backend.models.schemas import EMGSampleCreate, EMGSampleRead
+from backend.routers.auth import api_key_auth
+from backend.services.emg_processing import fill_missing_fields
 
 
 router = APIRouter(dependencies=[Depends(api_key_auth)])

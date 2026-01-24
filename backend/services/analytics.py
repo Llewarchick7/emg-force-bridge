@@ -2,7 +2,7 @@ from sqlalchemy.orm import Session
 from datetime import datetime
 from math import sqrt
 
-from ..db.models import EMGSample
+from backend.db.models import EMGSample
 
 
 def _query_window(db: Session, channel: int, start: datetime, end: datetime):

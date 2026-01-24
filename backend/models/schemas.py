@@ -75,3 +75,65 @@ class PSDResponse(BaseModel):
 	psd: list[float]
 	mnf: float
 	mdf: float
+
+
+# Clinical hierarchy: Patient → Session → Trial
+
+class PatientProfile(BaseModel):
+	id: Optional[int] = None
+	name: str
+	injury_side: Optional[str] = None  # e.g., 'left', 'right'
+	created_at: Optional[datetime] = None
+
+	class Config:
+		from_attributes = True
+
+
+class SessionCreate(BaseModel):
+	patient_id: int
+	started_at: Optional[datetime] = None
+	notes: Optional[str] = None
+
+
+class SessionRead(SessionCreate):
+	id: int
+	ended_at: Optional[datetime] = None
+
+	class Config:
+		from_attributes = True
+
+
+class TrialCreate(BaseModel):
+	session_id: int
+	name: str  # e.g., 'Bicep curls'
+	channel: int
+	limb: Optional[str] = None  # 'affected'|'healthy'
+	movement_type: Optional[str] = None  # 'reps'|'sustained'|...
+	started_at: Optional[datetime] = None
+	ended_at: Optional[datetime] = None
+	baseline_rms_uv: Optional[float] = None
+	mvc_rms_uv: Optional[float] = None
+
+
+class TrialRead(TrialCreate):
+	id: int
+
+	class Config:
+		from_attributes = True
+
+
+class TrialMVCUpdate(BaseModel):
+	mvc_rms_uv: float
+
+
+class TrialBaselineUpdate(BaseModel):
+	baseline_rms_uv: float
+
+
+class NormalizedActivationResponse(BaseModel):
+	percent_mvc: float
+	rms_uv: float
+	mvc_rms_uv: float
+	baseline_rms_uv: Optional[float] = None
+	start: datetime
+	end: datetime

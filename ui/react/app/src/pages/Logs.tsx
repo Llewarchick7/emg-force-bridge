@@ -30,6 +30,7 @@ export default function Logs() {
               <th style={{ width: 220 }}>Timestamp</th>
               <th style={{ width: 90 }}>Level</th>
               <th>Message</th>
+              <th>Details</th>
             </tr>
           </thead>
           <tbody>
@@ -38,10 +39,13 @@ export default function Logs() {
                 <td>{new Date(l.ts).toLocaleString()}</td>
                 <td>{l.level.toUpperCase()}</td>
                 <td>{l.message}</td>
+                <td style={{ fontFamily: 'monospace', fontSize: 12, whiteSpace: 'pre-wrap' }}>
+                  {l.context ? JSON.stringify(l.context) : ''}
+                </td>
               </tr>
             ))}
             {logs.length === 0 && (
-              <tr><td colSpan={3} style={{ color: '#475569' }}>No logs yet.</td></tr>
+              <tr><td colSpan={4} style={{ color: '#475569' }}>No logs yet.</td></tr>
             )}
           </tbody>
         </table>

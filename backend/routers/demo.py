@@ -4,11 +4,11 @@ from sqlalchemy.orm import Session
 from datetime import datetime, timedelta
 import numpy as np
 
-from db.session import get_db
-from db.models import EMGSample
-from routers.auth import api_key_auth
-from models.schemas import SyntheticEMGRequest
-from services.psd import moving_rms
+from backend.db.session import get_db
+from backend.db.models import EMGSample
+from backend.routers.auth import api_key_auth
+from backend.models.schemas import SyntheticEMGRequest
+from emg.preprocessing.envelope import sliding_rms_seconds
 
 router = APIRouter(dependencies=[Depends(api_key_auth)])
 
@@ -28,8 +28,8 @@ def generate_synthetic_emg(payload: SyntheticEMGRequest = Body(...), db: Session
         + np.random.normal(0.0, payload.noise_std, size=n)
     )
     rect = np.abs(x)
-    env = moving_rms(x, max(1, int(0.05 * fs)))  # 50 ms RMS window
-    rms_series = moving_rms(x, max(1, int(0.2 * fs)))  # 200 ms RMS estimate
+    env = sliding_rms_seconds(x, fs=fs, window_seconds=0.05)  # 50 ms RMS window
+    rms_series = sliding_rms_seconds(x, fs=fs, window_seconds=0.20)  # 200 ms RMS estimate
 
     rows = []
     for i in range(n):

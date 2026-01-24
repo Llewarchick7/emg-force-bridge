@@ -2,12 +2,12 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 from datetime import datetime
 
-from ..db.session import get_db
-from .auth import api_key_auth
-from ..services.analytics import activation_percent, threshold_crossings, rms_over_window
-from services.psd import psd_metrics
-from db.models import EMGSample
-from models.schemas import PSDResponse
+from backend.db.session import get_db
+from backend.routers.auth import api_key_auth
+from backend.services.analytics import activation_percent, threshold_crossings, rms_over_window
+from emg.features.freq import welch_psd, fft_psd, mean_frequency, median_frequency, bandlimit_psd
+from backend.db.models import EMGSample
+from backend.models.schemas import PSDResponse
 
 router = APIRouter(dependencies=[Depends(api_key_auth)])
 
@@ -50,6 +50,19 @@ def get_psd(
     channel: int = Query(..., ge=0),
     start: str = Query(...),
     end: str = Query(...),
+    method: str = Query("welch", pattern="^(fft|welch)$"),
+    # Welch parameters (pass-through)
+    window: str | None = Query("hann"),
+    nperseg: int | None = Query(None, ge=4),
+    noverlap: int | None = Query(None, ge=0),
+    nfft: int | None = Query(None, ge=4),
+    detrend: str | None = Query("constant"),
+    return_onesided: bool = Query(True),
+    scaling: str = Query("density", pattern="^(density|spectrum)$"),
+    average: str = Query("mean", pattern="^(mean|median)$"),
+    # Band limits (Hz)
+    fmin: float | None = Query(None, ge=0.0),
+    fmax: float | None = Query(None, ge=0.0),
     db: Session = Depends(get_db),
 ):
     """Compute simple FFT-based PSD for samples in [start, end] for a channel."""
@@ -76,10 +89,29 @@ def get_psd(
         fs = 1000.0
     import numpy as np
     x = np.array([r.raw for r in rows], dtype=float)
-    freqs, psd, mnf, mdf = psd_metrics(x, fs)
+    if method == "welch":
+        detrend_param = None if (detrend or "").lower() == "none" else detrend
+        freqs, psd = welch_psd(
+            x,
+            fs,
+            window=window or "hann",
+            nperseg=nperseg,
+            noverlap=noverlap,
+            nfft=nfft,
+            detrend=detrend_param,
+            return_onesided=return_onesided,
+            scaling=scaling,
+            average=average,
+        )
+    else:
+        freqs, psd = fft_psd(x, fs)
+    # Apply band limits before computing summary frequencies
+    freqs_band, psd_band = bandlimit_psd(freqs, psd, fmin=fmin, fmax=fmax)
+    mnf = mean_frequency(freqs_band, psd_band) if freqs_band.size else 0.0
+    mdf = median_frequency(freqs_band, psd_band) if freqs_band.size else 0.0
     return {
-        "freqs": [float(f) for f in freqs.tolist()],
-        "psd": [float(p) for p in psd.tolist()],
+        "freqs": [float(f) for f in freqs_band.tolist()],
+        "psd": [float(p) for p in psd_band.tolist()],
         "mnf": float(mnf),
         "mdf": float(mdf),
     }

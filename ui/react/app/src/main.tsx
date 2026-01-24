@@ -7,6 +7,7 @@ import Visualization from './pages/Visualization';
 import Calibration from './pages/Calibration';
 import Logs from './pages/Logs';
 import PSD from './pages/PSD';
+import ClinicalDashboard from './pages/ClinicalDashboard';
 import './styles.css';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
@@ -15,6 +16,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
       <Routes>
         <Route path="/" element={<App />}> 
           <Route index element={<Dashboard />} />
+          <Route path="clinical" element={<ClinicalDashboard />} />
           <Route path="visualization" element={<Visualization />} />
           <Route path="calibration" element={<Calibration />} />
           <Route path="psd" element={<PSD />} />
